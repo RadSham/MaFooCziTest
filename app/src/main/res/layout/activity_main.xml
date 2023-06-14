@@ -31,13 +31,37 @@
             android:inputType="phone" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonAuth"
+    <EditText
+        android:id="@+id/etAuthCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:layout_marginTop="50dp"
+        android:ems="10"
+        android:hint="Auth Code"
+        android:inputType="textPersonName"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_auth_phone" />
+
+    <Button
+        android:id="@+id/buttonSendPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Phone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ll_auth_phone" />
+
+    <Button
+        android:id="@+id/buttonSendCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Send Code"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonSendPhone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

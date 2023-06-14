@@ -1,9 +1,11 @@
 package com.example.testmafooczi
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.testmafooczi.databinding.ActivityMainBinding
+import com.example.testmafooczi.retrofit.LoginInformation
 import com.example.testmafooczi.retrofit.MainApi
 import com.example.testmafooczi.retrofit.Phone
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +21,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainApi: MainApi
+    private var responsePhoneBoolean = false
+    private lateinit var authPhone: Phone
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,20 +33,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        initEditTextPhone()
+        initButtons()
         initRetrofit()
     }
 
-    private fun initEditTextPhone() {
-        binding.buttonAuth.setOnClickListener {
+    private fun initButtons() {
+        binding.buttonSendPhone.setOnClickListener {
+            authPhone =
+                Phone("${binding.countryPicker.selectedCountryCode}${binding.etPhoneAuth.text}")
             CoroutineScope(Dispatchers.IO).launch {
-                val response = mainApi.sendAuthCode(
-                        Phone("${binding.countryPicker.selectedCountryCode}${binding.etPhoneAuth.text}")
-                )
-                runOnUiThread{
-                    Toast.makeText(this@MainActivity, response.isSuccessful.toString(), Toast.LENGTH_LONG).show()
+                val responsePhone = mainApi.sendAuthPhone(authPhone)
+                responsePhoneBoolean = responsePhone.isSuccessful
+                println(responsePhoneBoolean)
+                runOnUiThread {
+                    binding.etAuthCode.visibility = View.VISIBLE
+                    binding.buttonSendCode.visibility = View.VISIBLE
+                    binding.buttonSendPhone.visibility = View.GONE
+                    Toast.makeText(
+                        this@MainActivity,
+                        responsePhone.isSuccessful.toString(),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
+        }
+
+        binding.buttonSendCode.setOnClickListener {
+            val loginInfo =
+                LoginInformation(authPhone.phone, binding.etAuthCode.text.toString())
+            CoroutineScope(Dispatchers.IO).launch {
+                val responsePhoneCode = mainApi.sendAuthCode(loginInfo)
+                runOnUiThread {
+                    Toast.makeText(
+                        this@MainActivity,
+                        responsePhoneCode.isSuccessful.toString(),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
         }
     }
 
