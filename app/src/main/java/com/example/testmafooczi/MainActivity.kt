@@ -5,6 +5,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.testmafooczi.databinding.ActivityMainBinding
+import com.example.testmafooczi.fragment.FragmentCloseInterface
+import com.example.testmafooczi.fragment.RegistrationFragment
 import com.example.testmafooczi.retrofit.LoginInformation
 import com.example.testmafooczi.retrofit.MainApi
 import com.example.testmafooczi.retrofit.Phone
@@ -17,12 +19,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FragmentCloseInterface {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainApi: MainApi
     private var responsePhoneBoolean = false
     private lateinit var authPhone: Phone
+    private var accessToken: String? = null
+    private var refreshToken: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private fun initButtons() {
         binding.buttonSendPhone.setOnClickListener {
             authPhone =
-                Phone("${binding.countryPicker.selectedCountryCode}${binding.etPhoneAuth.text}")
+                Phone("+${binding.countryPicker.selectedCountryCode}${binding.etPhoneAuth.text}")
             CoroutineScope(Dispatchers.IO).launch {
                 val responsePhone = mainApi.sendAuthPhone(authPhone)
                 responsePhoneBoolean = responsePhone.isSuccessful
@@ -63,6 +67,17 @@ class MainActivity : AppCompatActivity() {
                 LoginInformation(authPhone.phone, binding.etAuthCode.text.toString())
             CoroutineScope(Dispatchers.IO).launch {
                 val responsePhoneCode = mainApi.sendAuthCode(loginInfo)
+                if (responsePhoneCode.body()?.is_user_exists == true) {
+                    accessToken = responsePhoneCode.body()?.access_token
+                    refreshToken = responsePhoneCode.body()?.refresh_token
+                    //TODO: authorize user
+                } else {
+                    println("HERE")
+                    runOnUiThread {
+                        sendCredToFragment(authPhone)
+                    }
+
+                }
                 runOnUiThread {
                     Toast.makeText(
                         this@MainActivity,
@@ -73,6 +88,26 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    private fun sendCredToFragment(authPhone: Phone) {
+        // Declaring fragment manager from making data
+        // transactions using the custom fragment
+        val mFragmentManager = supportFragmentManager
+        val mFragmentTransaction = mFragmentManager.beginTransaction()
+        val mFragment = RegistrationFragment(this)
+
+        //hide buttons and Edit Views
+        binding.clMain.visibility = View.GONE
+
+        // On button click, a bundle is initialized and the
+        // text from the EditText is passed in the custom
+        // fragment using this bundle
+
+        val mBundle = Bundle()
+        mBundle.putString("mText", authPhone.phone)
+        mFragment.arguments = mBundle
+        mFragmentTransaction.replace(R.id.flMain, mFragment).addToBackStack(null).commit()
     }
 
     private fun initRetrofit() {
@@ -90,5 +125,9 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val MAIN_URL = "https://plannerok.ru/"
+    }
+
+    override fun onFragClose() {
+        binding.clMain.visibility = View.VISIBLE
     }
 }
