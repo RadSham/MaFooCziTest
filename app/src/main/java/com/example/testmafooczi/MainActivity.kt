@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
                     Toast.makeText(
                         this@MainActivity,
                         responsePhone.isSuccessful.toString(),
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -70,11 +70,11 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
                 if (responsePhoneCode.body()?.is_user_exists == true) {
                     accessToken = responsePhoneCode.body()?.access_token
                     refreshToken = responsePhoneCode.body()?.refresh_token
-                    //TODO: authorize user
+                    //TODO: go to Profile
                 } else {
                     println("HERE")
                     runOnUiThread {
-                        sendCredToFragment(authPhone)
+                        toRegFragment(authPhone)
                     }
 
                 }
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
         }
     }
 
-    private fun sendCredToFragment(authPhone: Phone) {
+    private fun toRegFragment(authPhone: Phone) {
         // Declaring fragment manager from making data
         // transactions using the custom fragment
         val mFragmentManager = supportFragmentManager

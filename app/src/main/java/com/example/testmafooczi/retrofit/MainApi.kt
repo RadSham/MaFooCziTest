@@ -13,4 +13,7 @@ interface MainApi{
     @POST("/api/v1/users/check-auth-code/")
     suspend fun sendAuthCode(@Body loginInformation: LoginInformation): Response<AuthCredential>
 
+    @POST("/api/v1/users/register/")
+    suspend fun registerUser(@Body registerUser: RegisterUser): Response<RegisteredCredentials>
+
 }
