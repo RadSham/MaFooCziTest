@@ -1,9 +1,11 @@
 package com.example.testmafooczi
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.testmafooczi.activity.ProfileActivity
 import com.example.testmafooczi.databinding.ActivityMainBinding
 import com.example.testmafooczi.fragment.FragmentCloseInterface
 import com.example.testmafooczi.fragment.RegistrationFragment
@@ -48,7 +50,7 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
             CoroutineScope(Dispatchers.IO).launch {
                 val responsePhone = mainApi.sendAuthPhone(authPhone)
                 responsePhoneBoolean = responsePhone.isSuccessful
-                println(responsePhoneBoolean)
+                println("responsePhoneBoolean: $responsePhoneBoolean")
                 runOnUiThread {
                     binding.etAuthCode.visibility = View.VISIBLE
                     binding.buttonSendCode.visibility = View.VISIBLE
@@ -70,9 +72,13 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
                 if (responsePhoneCode.body()?.is_user_exists == true) {
                     accessToken = responsePhoneCode.body()?.access_token
                     refreshToken = responsePhoneCode.body()?.refresh_token
-                    //TODO: go to Profile
+                    //go to Profile
+                    val intent = Intent (this@MainActivity, ProfileActivity::class.java)
+                    intent.putExtra("accessToken", accessToken)
+                    intent.putExtra("refreshToken", refreshToken)
+                    startActivity(intent)
                 } else {
-                    println("HERE")
+                    println("toRegFragment")
                     runOnUiThread {
                         toRegFragment(authPhone)
                     }
@@ -103,7 +109,6 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
         // On button click, a bundle is initialized and the
         // text from the EditText is passed in the custom
         // fragment using this bundle
-
         val mBundle = Bundle()
         mBundle.putString("mText", authPhone.phone)
         mFragment.arguments = mBundle

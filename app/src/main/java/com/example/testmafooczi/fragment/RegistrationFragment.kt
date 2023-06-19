@@ -1,5 +1,6 @@
 package com.example.testmafooczi.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.example.testmafooczi.MainActivity
+import com.example.testmafooczi.activity.ProfileActivity
 import com.example.testmafooczi.databinding.FragmentRegistrationBinding
 import com.example.testmafooczi.retrofit.MainApi
 import com.example.testmafooczi.retrofit.RegisterUser
@@ -75,7 +77,11 @@ class RegistrationFragment(private val fragCloseInterface: FragmentCloseInterfac
                     if (responseRegisteredUser.isSuccessful) {
                         accessToken = responseRegisteredUser.body()?.access_token
                         refreshToken = responseRegisteredUser.body()?.refresh_token
-                        //TODO: go to Profile
+                        //go to Profile
+                        val intent = Intent (activity, ProfileActivity::class.java)
+                        intent.putExtra("accessToken", accessToken)
+                        intent.putExtra("refreshToken", refreshToken)
+                        startActivity(intent)
                     }
                 }
             } else {
