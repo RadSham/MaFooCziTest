@@ -13,7 +13,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imAvatar"
+            android:id="@+id/imProfileAvatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -30,10 +30,10 @@
             android:hint="@string/phone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imAvatar" />
+            app:layout_constraintTop_toBottomOf="@+id/imProfileAvatar" />
 
         <TextView
-            android:id="@+id/tvNickname"
+            android:id="@+id/tvProfileNickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -43,27 +43,27 @@
             app:layout_constraintTop_toBottomOf="@+id/tvProfilePhone" />
 
         <TextView
-            android:id="@+id/tvCity"
+            android:id="@+id/tvProfileCity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="@string/city"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvNickname" />
+            app:layout_constraintTop_toBottomOf="@+id/tvProfileNickname" />
 
         <TextView
-            android:id="@+id/tvBirthDate"
+            android:id="@+id/tvProfileBirthDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="@string/birthdate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvCity" />
+            app:layout_constraintTop_toBottomOf="@+id/tvProfileCity" />
 
         <TextView
-            android:id="@+id/tvZodiacSign"
+            android:id="@+id/tvProfileZodiacSign"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -71,17 +71,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvBirthDate" />
+            app:layout_constraintTop_toBottomOf="@+id/tvProfileBirthDate" />
 
         <TextView
-            android:id="@+id/tvAbout"
+            android:id="@+id/tvProfileAbout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="@string/about"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvZodiacSign" />
+            app:layout_constraintTop_toBottomOf="@+id/tvProfileZodiacSign" />
 
         <Button
             android:id="@+id/btEditProfile"
@@ -91,7 +91,7 @@
             android:text="@string/edit_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvAbout" />
+            app:layout_constraintTop_toBottomOf="@+id/tvProfileAbout" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

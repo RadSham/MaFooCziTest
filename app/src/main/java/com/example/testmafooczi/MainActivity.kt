@@ -9,16 +9,13 @@ import com.example.testmafooczi.activity.ProfileActivity
 import com.example.testmafooczi.databinding.ActivityMainBinding
 import com.example.testmafooczi.fragment.FragmentCloseInterface
 import com.example.testmafooczi.fragment.RegistrationFragment
+import com.example.testmafooczi.retrofit.InitRetrofit
 import com.example.testmafooczi.retrofit.LoginInformation
 import com.example.testmafooczi.retrofit.MainApi
 import com.example.testmafooczi.retrofit.Phone
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainActivity : AppCompatActivity(), FragmentCloseInterface {
@@ -73,7 +70,7 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
                     accessToken = responsePhoneCode.body()?.access_token
                     refreshToken = responsePhoneCode.body()?.refresh_token
                     //go to Profile
-                    val intent = Intent (this@MainActivity, ProfileActivity::class.java)
+                    val intent = Intent(this@MainActivity, ProfileActivity::class.java)
                     intent.putExtra("accessToken", accessToken)
                     intent.putExtra("refreshToken", refreshToken)
                     startActivity(intent)
@@ -116,16 +113,8 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
     }
 
     private fun initRetrofit() {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(MAIN_URL).client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        mainApi = retrofit.create(MainApi::class.java)
+        val inRet = InitRetrofit()
+        mainApi = inRet.initRetrofit()
     }
 
     companion object {
