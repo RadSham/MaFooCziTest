@@ -1,8 +1,10 @@
 package com.example.testmafooczi.activity
 
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
@@ -13,6 +15,8 @@ import com.example.testmafooczi.fragment.FragmentCloseInterface
 import com.example.testmafooczi.retrofit.InitRetrofit
 import com.example.testmafooczi.retrofit.MainApi
 import com.example.testmafooczi.retrofit.ProfileUser
+import com.example.testmafooczi.utils.ImageManager
+import com.example.testmafooczi.viewmodel.ProfileUserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,6 +31,7 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
     private var refreshToken: String? = null
     private lateinit var mainApi: MainApi
     lateinit var profileUser: ProfileUser
+    private val viewModel: ProfileUserViewModel by viewModels()
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -38,6 +43,17 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
         init()
         getUser()
         initButton()
+        initViewModel()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun initViewModel(){
+        viewModel.mutableProfileUser.observe(this) { user ->
+            profileUser = user
+            println("ProfileAct " + profileUser.profile_data.city)
+            println("user $user")
+            initProfile()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -45,7 +61,7 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
         CoroutineScope(Dispatchers.IO).launch {
             //TODO: check access token for validity
             profileUser = mainApi.getCurrentUser()
-            println(profileUser.toString())
+            println("profileUser $profileUser")
             runOnUiThread {
                 initProfile()
             }
@@ -56,7 +72,6 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
     private fun init() {
         initTokens()
         initRetrofit()
-
     }
 
     private fun initTokens() {
@@ -72,7 +87,12 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initProfile() = with(binding) {
-        imProfileAvatar.setImageURI(profileUser.profile_data.avatar?.toUri())
+        if (profileUser.profile_data.avatar.isNullOrEmpty()) {
+            imProfileAvatar.setImageResource(R.drawable.ic_person)
+        } else {
+            //TODO: setAvatar from EditProfileActivity
+            setAvatar(profileUser.profile_data.avatar!!.toUri())
+        }
         tvProfilePhone.text = profileUser.profile_data.phone
         tvProfileNickname.text = profileUser.profile_data.username
         tvProfileCity.text = profileUser.profile_data.city
@@ -106,6 +126,13 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
 
         mFragment.arguments = mBundle
         mFragmentTransaction.replace(R.id.flEditProfile, mFragment).addToBackStack(null).commit()
+    }
+
+    private fun setAvatar(uri: Uri) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val bitmapList = ImageManager.imageResize(this@ProfileActivity, arrayListOf(uri))
+            binding.imProfileAvatar.setImageBitmap(bitmapList[0])
+        }
     }
 
     override fun onFragClose() {

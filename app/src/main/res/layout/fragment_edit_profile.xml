@@ -52,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:hint="@string/birthdate"
+        android:inputType="date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edEditProfileCity" />
@@ -78,7 +79,7 @@
         app:layout_constraintTop_toBottomOf="@+id/edProfileZodiacSign" />
 
     <Button
-        android:id="@+id/btEditProfile"
+        android:id="@+id/btSaveEditProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"

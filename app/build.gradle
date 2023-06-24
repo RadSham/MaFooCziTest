@@ -41,6 +41,8 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
+    implementation 'androidx.activity:activity-ktx:1.7.2'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
     //DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
@@ -61,6 +63,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation("com.android.volley:volley:1.2.1")
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'io.ak1.pix:piximagepicker:1.6.3'
 
     //Country code and flag
     implementation 'com.hbb20:ccp:2.7.2'
