@@ -23,4 +23,7 @@ interface MainApi {
 
     @PUT("/api/v1/users/me/")
     suspend fun updateUser(@Body updateUser: UpdateUser) : Response<Avatars>
+
+    @POST("/api/v1/users/refresh-token/")
+    suspend fun refreshToken(@Body refreshToken: RefreshToken): Response<RegisteredCredentials>
 }

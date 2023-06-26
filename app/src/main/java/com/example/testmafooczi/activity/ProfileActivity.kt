@@ -15,6 +15,7 @@ import com.example.testmafooczi.fragment.FragmentCloseInterface
 import com.example.testmafooczi.retrofit.InitRetrofit
 import com.example.testmafooczi.retrofit.MainApi
 import com.example.testmafooczi.retrofit.ProfileUser
+import com.example.testmafooczi.retrofit.RefreshToken
 import com.example.testmafooczi.utils.ImageManager
 import com.example.testmafooczi.viewmodel.ProfileUserViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -58,11 +59,18 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getUser() {
         CoroutineScope(Dispatchers.IO).launch {
-            //TODO: check access token for validity
+            if (mainApi.getCurrentUser().code() == 401) {
+                val inRet = InitRetrofit()
+                mainApi = inRet.initRetrofit()
+                val updatedCredentials = refreshToken?.let { RefreshToken(it) }
+                    ?.let { mainApi.refreshToken(it) }
+                accessToken = updatedCredentials?.body()?.access_token
+                refreshToken = updatedCredentials?.body()?.refresh_token
+                mainApi = inRet.initRetrofitWithAccessToken(accessToken)
+            }
             if (mainApi.getCurrentUser().isSuccessful)
                 profileUser = mainApi.getCurrentUser().body()!!
-            else if (mainApi.getCurrentUser().code() == 401)
-                println("Unauthorized")
+
             runOnUiThread {
                 initProfile()
             }
@@ -79,6 +87,7 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
         val intent = intent
         accessToken = intent.getStringExtra("accessToken")
         refreshToken = intent.getStringExtra("refreshToken")
+        println("$accessToken $refreshToken")
     }
 
     private fun initRetrofit() {
@@ -91,7 +100,6 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
         if (profileUser.profile_data.avatar.isNullOrEmpty()) {
             imProfileAvatar.setImageResource(R.drawable.ic_person)
         } else {
-            //TODO: setAvatar from EditProfileActivity
             setAvatar(profileUser.profile_data.avatar!!.toUri())
         }
         tvProfilePhone.text = profileUser.profile_data.phone

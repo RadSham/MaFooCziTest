@@ -70,7 +70,7 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
         if (profileUser.profile_data.avatar.isNullOrEmpty() || profileUser.profile_data.avatar == "null") {
             binding.imEditProfileAvatar.setImageResource(R.drawable.ic_person_add)
         } else {
-            binding.imEditProfileAvatar.setImageURI(profileUser.profile_data.avatar?.toUri())
+            setAvatar(profileUser.profile_data.avatar!!.toUri())
         }
         binding.tvEditProfilePhone.text = profileUser.profile_data.phone
         binding.tvEditProfileNickname.text = profileUser.profile_data.username
@@ -122,14 +122,24 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
                 profileUser.profile_data.status.toString(),
                 Avatar(avatarPath, "base24")
             )
-            profileUser.profile_data.avatar = avatarPath
+            if (avatarPath != "" || avatarPath.isNotEmpty()) {
+                profileUser.profile_data.avatar = avatarPath
+            }
             profileUser.profile_data.birthday = tvEditProfileBirthDate.text.toString()
             profileUser.profile_data.city = edEditProfileCity.text.toString()
             viewModel.setProfileUser(profileUser)
-            //TODO: check access token for validity
             CoroutineScope(Dispatchers.IO).launch {
-                val avatars = mainApi.updateUser(updatedUser)
-                if (avatars.isSuccessful) {
+                if (mainApi.updateUser(updatedUser).code() == 401) {
+                    val inRet = InitRetrofit()
+                    mainApi = inRet.initRetrofit()
+                    val updatedCredentials = refreshToken?.let { RefreshToken(it) }
+                        ?.let { mainApi.refreshToken(it) }
+                    accessToken = updatedCredentials?.body()?.access_token
+                    refreshToken = updatedCredentials?.body()?.refresh_token
+                    mainApi = inRet.initRetrofitWithAccessToken(accessToken)
+                }
+                if (mainApi.updateUser(updatedUser).isSuccessful) {
+                    val avatars = mainApi.updateUser(updatedUser)
                     profileUser.profile_data.avatars = avatars.body()
                     activity?.runOnUiThread {
                         viewModel.setProfileUser(profileUser)
@@ -159,7 +169,8 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
                 val sdf = SimpleDateFormat(myFormat, Locale.US)
                 binding.tvEditProfileBirthDate.text = sdf.format(cal.time)
 
-                binding.tvEditProfileZodiacSign.text = checkZodiac(binding.tvEditProfileBirthDate.text.toString())
+                binding.tvEditProfileZodiacSign.text =
+                    checkZodiac(binding.tvEditProfileBirthDate.text.toString())
             }
 
         binding.tvEditProfileBirthDate.setOnClickListener {
@@ -191,7 +202,8 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
     private val startForSingleModeResult =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { currentUri ->
             if (currentUri != null) {
-                avatarPath = currentUri.path.toString()
+                println(currentUri)
+                avatarPath = currentUri.toString()
                 setAvatar(currentUri)
             } else {
                 showToast("No media selected")
