@@ -8,7 +8,6 @@ class ProfileUserViewModel : ViewModel() {
     val mutableProfileUser = MutableLiveData<ProfileUser>()
 
     fun setProfileUser(profileUser: ProfileUser) {
-        println("Here " + profileUser.profile_data.city)
         mutableProfileUser.value = profileUser
     }
 

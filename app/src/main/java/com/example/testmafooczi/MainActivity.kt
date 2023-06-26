@@ -47,7 +47,6 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
             CoroutineScope(Dispatchers.IO).launch {
                 val responsePhone = mainApi.sendAuthPhone(authPhone)
                 responsePhoneBoolean = responsePhone.isSuccessful
-                println("responsePhoneBoolean: $responsePhoneBoolean")
                 runOnUiThread {
                     binding.etAuthCode.visibility = View.VISIBLE
                     binding.buttonSendCode.visibility = View.VISIBLE
@@ -75,7 +74,6 @@ class MainActivity : AppCompatActivity(), FragmentCloseInterface {
                     intent.putExtra("refreshToken", refreshToken)
                     startActivity(intent)
                 } else {
-                    println("toRegFragment")
                     runOnUiThread {
                         toRegFragment(authPhone)
                     }

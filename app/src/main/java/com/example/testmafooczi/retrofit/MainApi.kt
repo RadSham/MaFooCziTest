@@ -19,7 +19,7 @@ interface MainApi {
     suspend fun registerUser(@Body registerUser: RegisterUser): Response<RegisteredCredentials>
 
     @GET("/api/v1/users/me/")
-    suspend fun getCurrentUser(): ProfileUser
+    suspend fun getCurrentUser(): Response<ProfileUser>
 
     @PUT("/api/v1/users/me/")
     suspend fun updateUser(@Body updateUser: UpdateUser) : Response<Avatars>

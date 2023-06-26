@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">TestMaFooCzi</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello">Hello</string>
@@ -7,7 +7,7 @@
     <string name="nickname">Nickname</string>
     <string name="city">City</string>
     <string name="birthdate">Birthdate</string>
-    <string name="firstdate">1970–01–01</string>
+    <string name="firstdate" tools:ignore="TypographyDashes">1970-01-01</string>
     <string name="zodiac_sign">Zodiac sign</string>
     <string name="about">About</string>
     <string name="edit_profile">Edit Profile</string>

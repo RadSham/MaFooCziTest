@@ -1,5 +1,6 @@
 package com.example.testmafooczi.fragment
 
+import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
 import android.net.Uri
 import android.os.Build
@@ -25,6 +26,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface) : Fragment() {
 
@@ -48,10 +51,10 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
         message = bundle!!.getString("profileUser")
         profileUser = message?.let { Json.decodeFromString<ProfileUser>(it) }!!
         accessToken = bundle.getString("accessToken")
-        println("accessToken $accessToken")
         refreshToken = bundle.getString("refreshToken")
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -75,14 +78,13 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
         if (profileUser.profile_data.city != "null") binding.edEditProfileCity.setText(profileUser.profile_data.city)
         else binding.edEditProfileCity.setText(R.string.city)
 
-        if (profileUser.profile_data.birthday != "null") binding.edProfileBirthDate.setText(
+        if (profileUser.profile_data.birthday != "null") binding.tvEditProfileBirthDate.text =
             profileUser.profile_data.birthday
-        )
-        else binding.edProfileBirthDate.setText(R.string.firstdate)
+        else binding.tvEditProfileBirthDate.text = getString(R.string.firstdate)
 
-        if (profileUser.profile_data.birthday != "null") binding.edProfileZodiacSign.setText(
-            profileUser.profile_data.birthday?.let { checkZodiac(it) })
-        else (binding.edProfileZodiacSign.setText(R.string.zodiac_sign))
+        if (profileUser.profile_data.birthday != "null") binding.tvEditProfileZodiacSign.text =
+            profileUser.profile_data.birthday?.let { checkZodiac(it) }
+        else binding.tvEditProfileZodiacSign.text = checkZodiac(getString(R.string.firstdate))
 
         binding.edProfileAbout.setText(
             getString(
@@ -98,10 +100,11 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
         fragCloseInterface.onFragClose()
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun init() {
         initRetrofit()
         initButtons()
+        initDatePicker()
     }
 
     private fun initButtons() = with(binding) {
@@ -112,7 +115,7 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
             val updatedUser = UpdateUser(
                 profileUser.profile_data.name.toString(),
                 tvEditProfileNickname.text.toString(),
-                edProfileBirthDate.text.toString(),
+                tvEditProfileBirthDate.text.toString(),
                 edEditProfileCity.text.toString(),
                 profileUser.profile_data.vk.toString(),
                 profileUser.profile_data.instagram.toString(),
@@ -120,21 +123,52 @@ class EditProfileFragment(private val fragCloseInterface: FragmentCloseInterface
                 Avatar(avatarPath, "base24")
             )
             profileUser.profile_data.avatar = avatarPath
-            profileUser.profile_data.birthday = edProfileBirthDate.text.toString()
+            profileUser.profile_data.birthday = tvEditProfileBirthDate.text.toString()
             profileUser.profile_data.city = edEditProfileCity.text.toString()
             viewModel.setProfileUser(profileUser)
+            //TODO: check access token for validity
             CoroutineScope(Dispatchers.IO).launch {
                 val avatars = mainApi.updateUser(updatedUser)
                 if (avatars.isSuccessful) {
                     profileUser.profile_data.avatars = avatars.body()
-                    activity?.runOnUiThread{
+                    activity?.runOnUiThread {
                         viewModel.setProfileUser(profileUser)
                         fragCloseInterface.onFragClose()
                     }
-                    activity?.supportFragmentManager?.beginTransaction()?.remove(this@EditProfileFragment)
-                        ?.commit();
+                    activity?.supportFragmentManager?.beginTransaction()
+                        ?.remove(this@EditProfileFragment)
+                        ?.commit()
                 }
             }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun initDatePicker() {
+        binding.tvEditProfileBirthDate.text =
+            SimpleDateFormat("dd.MM.yyyy").format(System.currentTimeMillis())
+
+        val cal = Calendar.getInstance()
+        val dateSetListener =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                cal.set(Calendar.YEAR, year)
+                cal.set(Calendar.MONTH, monthOfYear)
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                val myFormat = "yyyy-MM-dd"
+                val sdf = SimpleDateFormat(myFormat, Locale.US)
+                binding.tvEditProfileBirthDate.text = sdf.format(cal.time)
+
+                binding.tvEditProfileZodiacSign.text = checkZodiac(binding.tvEditProfileBirthDate.text.toString())
+            }
+
+        binding.tvEditProfileBirthDate.setOnClickListener {
+            DatePickerDialog(
+                context!!, dateSetListener,
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+            ).show()
         }
     }
 

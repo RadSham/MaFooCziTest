@@ -46,19 +46,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvEditProfileNickname" />
 
-    <EditText
-        android:id="@+id/edProfileBirthDate"
+    <TextView
+        android:id="@+id/tvEditProfileBirthDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:datePickerMode="spinner"
         android:hint="@string/birthdate"
         android:inputType="date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edEditProfileCity" />
 
-    <EditText
-        android:id="@+id/edProfileZodiacSign"
+    <TextView
+        android:id="@+id/tvEditProfileZodiacSign"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -66,7 +67,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edProfileBirthDate" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEditProfileBirthDate" />
 
     <EditText
         android:id="@+id/edProfileAbout"
@@ -76,7 +77,7 @@
         android:hint="@string/about"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edProfileZodiacSign" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEditProfileZodiacSign" />
 
     <Button
         android:id="@+id/btSaveEditProfile"

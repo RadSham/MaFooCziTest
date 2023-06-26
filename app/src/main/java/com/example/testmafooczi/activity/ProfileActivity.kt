@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
 
@@ -47,11 +48,9 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun initViewModel(){
+    fun initViewModel() {
         viewModel.mutableProfileUser.observe(this) { user ->
             profileUser = user
-            println("ProfileAct " + profileUser.profile_data.city)
-            println("user $user")
             initProfile()
         }
     }
@@ -60,8 +59,10 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
     private fun getUser() {
         CoroutineScope(Dispatchers.IO).launch {
             //TODO: check access token for validity
-            profileUser = mainApi.getCurrentUser()
-            println("profileUser $profileUser")
+            if (mainApi.getCurrentUser().isSuccessful)
+                profileUser = mainApi.getCurrentUser().body()!!
+            else if (mainApi.getCurrentUser().code() == 401)
+                println("Unauthorized")
             runOnUiThread {
                 initProfile()
             }
@@ -143,78 +144,78 @@ class ProfileActivity : AppCompatActivity(), FragmentCloseInterface {
         @RequiresApi(Build.VERSION_CODES.O)
         fun checkZodiac(tDate: String): String {
             try {
-                val date = LocalDate.parse(tDate)
+                val date = LocalDate.parse(tDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 val month = date.month
                 val day = date.dayOfMonth
                 var sign = ""
                 when (month.name) {
-                    "January" -> {
+                    "JANUARY" -> {
                         sign = if (day < 20)
                             "Capricorn"
                         else
                             "Aquarius"
                     }
-                    "February" -> {
+                    "FEBRUARY" -> {
                         sign = if (day < 19)
                             "Aquarius"
                         else
                             "Pisces"
                     }
-                    "March" -> {
+                    "MARCH" -> {
                         sign = if (day < 21)
                             "Pisces"
                         else
                             "Aries"
                     }
-                    "April" -> {
+                    "APRIL" -> {
                         sign = if (day < 20)
                             "Aries"
                         else
                             "Taurus"
                     }
-                    "May" -> {
+                    "MAY" -> {
                         sign = if (day < 21)
                             "Taurus"
                         else
                             "Gemini"
                     }
-                    "June" -> {
+                    "JUNE" -> {
                         sign = if (day < 21)
                             "Gemini"
                         else
                             "Cancer"
                     }
-                    "July" -> {
+                    "JULY" -> {
                         sign = if (day < 23)
                             "Cancer"
                         else
                             "Leo"
                     }
-                    "August" -> {
+                    "AUGUST" -> {
                         sign = if (day < 23)
                             "Leo"
                         else
                             "Virgo"
                     }
-                    "September" -> {
+                    "SEPTEMBER" -> {
                         sign = if (day < 23)
                             "Virgo"
                         else
                             "Libra"
                     }
-                    "October" -> {
+                    "OCTOBER" -> {
                         sign = if (day < 23)
                             "Libra"
                         else
                             "Scorpio"
                     }
-                    "November" -> {
+                    "NOVEMBER" -> {
                         sign = if (day < 22)
                             "scorpio"
                         else
                             "Sagittarius"
                     }
-                    "December" -> {
+                    "DECEMBER" -> {
                         sign = if (day < 22)
                             "Sagittarius"
                         else
